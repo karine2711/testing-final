@@ -25,4 +25,17 @@ public class Locators {
     public static final By OLD_PRICE = By.className("product-old-price");
     public static final By PRODUCT_AGE_XPATH = By.xpath("//p[@class='product-price']/preceding-sibling::p[@class='products-age'][1]");
 
+
+    //Registration
+    public static final By REGISTRATION_FORM = By.cssSelector("form[action=\"https://megatoys.am/en/users/edit\"]");
+    public static final By SUBMIT_BUTTON = By.cssSelector("button[type=\"submit\"]");
+    public static final By INPUT_TEXT = By.cssSelector("input[type=\"text\"]");
+    public static final By EMAIL_INPUT = By.cssSelector("input[name=\"email\"]");
+    public static final By PASSWORD_INPUT = By.cssSelector("input[name=\"password\"]");
+    public static final String BIRTH_DAY_CSS = "select[name=\"days\"]";
+    public static final String BIRTH_MONTH_CSS = "select[name=\"months\"]";
+    public static final String BIRTH_YEAR_CSS = "select[name=\"years\"]";
+    public static final By BIRTH_DAY = By.cssSelector(BIRTH_DAY_CSS);
+    public static final By BIRTH_MONTH = By.cssSelector(BIRTH_MONTH_CSS);
+    public static final By BIRTH_YEAR = By.cssSelector(BIRTH_YEAR_CSS);
 }

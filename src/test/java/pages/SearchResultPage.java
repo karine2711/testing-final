@@ -23,14 +23,37 @@ public class SearchResultPage extends BasePage {
     }
 
     public List<String> getAllTitles() {
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(Locators.PRODUCT_TITLES));
         return driver
                 .findElements(Locators.PRODUCT_TITLES)
                 .stream()
                 .map(e -> e.getAttribute("innerText"))
                 .toList();
     }
+    public List<String> getAllTitlesWithoutWaiting() {
+        return driver
+                .findElements(Locators.PRODUCT_TITLES)
+                .stream()
+                .map(e -> e.getAttribute("innerText"))
+                .toList();
+    }
+    public String getFirstTitle() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.PRODUCT_TITLES));
+        var titleAnchor = driver.findElement(Locators.PRODUCT_TITLES);
+        var title = titleAnchor.getAttribute("innerText");
+        System.out.println("Title found: " + title);
 
+        return title;
+    }
+    public String getFirstBrand() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.PRODUCT_BRAND));
+        var titleAnchor = driver.findElement(Locators.PRODUCT_BRAND);
+        var title = titleAnchor.getAttribute("innerText");
+        System.out.println("Brand found: " + title);
+        return title;
+    }
     public List<String> getAllBrands() {
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(Locators.PRODUCT_BRAND));
         return driver
                 .findElements(Locators.PRODUCT_BRAND)
                 .stream()

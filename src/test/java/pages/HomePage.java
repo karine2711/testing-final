@@ -19,21 +19,7 @@ public class HomePage extends BasePage {
         return new SearchResultPage(driver);
     }
 
-    public String getFirstTitle() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(Locators.PRODUCT_TITLES));
-        var titleAnchor = driver.findElements(Locators.PRODUCT_TITLES).get(0);
-        var title = titleAnchor.getAttribute("innerText");
-        System.out.println("Title found: " + title);
 
-        return title;
-    }
-    public String getFirstBrand() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(Locators.PRODUCT_BRAND));
-        var titleAnchor = driver.findElements(Locators.PRODUCT_BRAND).get(0);
-        var title = titleAnchor.getAttribute("innerText");
-        System.out.println("Brand found: " + title);
-        return title;
-    }
 
     public HomePage load() {
         super.load("/");

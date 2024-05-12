@@ -20,7 +20,7 @@ import static org.testng.Assert.assertTrue;
  * 2. 'Test Filter Search Results by Age Functionality.'
  */
 @Listeners(ScreenshotListener.class)
-public class SortAndFilterTests extends BaseTest {
+public class SortAndFilterTest extends BaseTest {
     private int[] ageBoundaries = new int[]{0, 12,};
     private Map<String, String> monthTextI18n = Map.of("en", "month", "am", "ամս");
     private Map<String, String> yearTextI18n = Map.of("en", "years", "am", "տարեկան");
@@ -29,9 +29,9 @@ public class SortAndFilterTests extends BaseTest {
     Pattern upperAgePattern = Pattern.compile("-(\\d+)");
 
     @Test
-    public void testSort() {
+    public void testSortFromSearch() {
         homePage.load();
-        String firstTitle = homePage.getFirstBrand();
+        String firstTitle = homePage.clickProductMenu().getFirstBrand();
         SearchResultPage searchResultPage = homePage.search(firstTitle);
 
         List<Integer> smallestPrices = searchResultPage.getAllPrices();
@@ -45,6 +45,28 @@ public class SortAndFilterTests extends BaseTest {
         searchResultPage.sortByPriceDesc();
         searchResultPage.goToLastPage();
         List<Integer> pricesOnLastPageAfterDescSort = searchResultPage.getAllPrices();
+        int size = pricesOnLastPageAfterDescSort.size();
+        for (int i = 0; i < size; i++) {
+            assertEquals(pricesOnLastPageAfterDescSort.get(size - 1 - i), orderedPrices.get(i));
+        }
+    }
+
+  @Test
+    public void testSortFromProductsPage() {
+        homePage.load();
+        SearchResultPage productMenuPage = homePage.clickProductMenu();
+
+        List<Integer> smallestPrices = productMenuPage.getAllPrices();
+
+        // By default, search result sorted in asc order
+        List<Integer> orderedPrices = new ArrayList<>(smallestPrices);
+        assertEquals(smallestPrices, orderedPrices);
+        Collections.sort(orderedPrices);
+        assertEquals(smallestPrices, orderedPrices);
+
+        productMenuPage.sortByPriceDesc();
+        productMenuPage.goToLastPage();
+        List<Integer> pricesOnLastPageAfterDescSort = productMenuPage.getAllPrices();
         int size = pricesOnLastPageAfterDescSort.size();
         for (int i = 0; i < size; i++) {
             assertEquals(pricesOnLastPageAfterDescSort.get(size - 1 - i), orderedPrices.get(i));
@@ -130,6 +152,4 @@ public class SortAndFilterTests extends BaseTest {
         }
         return Integer.MAX_VALUE;
     }
-
-
 }

@@ -2,12 +2,9 @@ package tests;
 
 import base.BaseTest;
 import listeners.ScreenshotListener;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.SearchResultPage;
-import util.Locators;
 
 import java.util.*;
 
@@ -18,11 +15,11 @@ import static org.testng.Assert.*;
  * 'Test Search Functionality.'
  */
 @Listeners(ScreenshotListener.class)
-public class SearchTests extends BaseTest {
+public class SearchTest extends BaseTest {
     @Test
     public void searchByFirstTitleFull() {
         homePage.load();
-        String firstTitle = homePage.getFirstTitle();
+        String firstTitle = homePage.clickProductMenu().getFirstTitle();
         SearchResultPage searchResultPage = homePage.search(firstTitle);
         List<String> foundProductTitles = searchResultPage.getAllTitles();
         System.out.println(foundProductTitles);
@@ -32,7 +29,7 @@ public class SearchTests extends BaseTest {
     @Test
     public void searchByFirstTitlePart() {
         homePage.load();
-        String firstTitle = homePage.getFirstTitle();
+        String firstTitle = homePage.clickProductMenu().getFirstTitle();
         var titlePart = firstTitle.substring(0, firstTitle.length() / 2);
         SearchResultPage searchResultPage = homePage.search(titlePart);
         List<String> foundProductTitles = searchResultPage.getAllTitles();
@@ -43,7 +40,7 @@ public class SearchTests extends BaseTest {
     @Test
     public void searchByFirstBrandFull() {
         homePage.load();
-        String firstBrand = homePage.getFirstBrand();
+        String firstBrand = homePage.clickProductMenu().getFirstBrand();
         SearchResultPage searchResultPage = homePage.search(firstBrand);
         List<String> foundProductBrands = searchResultPage.getAllBrands();
         System.out.println(foundProductBrands);
@@ -53,7 +50,7 @@ public class SearchTests extends BaseTest {
     @Test
     public void searchByFirstBrandPart() {
         homePage.load();
-        String firstBrand = homePage.getFirstBrand();
+        String firstBrand = homePage.clickProductMenu().getFirstBrand();
         var brandPart = firstBrand.substring(0, firstBrand.length() / 2);
         SearchResultPage searchResultPage = homePage.search(brandPart);
         List<String> foundProductBrands = searchResultPage.getAllBrands();
@@ -78,7 +75,7 @@ public class SearchTests extends BaseTest {
     public void sqlInjectionDoesNotWork() {
         homePage.load();
         SearchResultPage searchResultPage = homePage.search("' OR '1'='1' --");
-        List<String> titles = searchResultPage.getAllTitles();
+        List<String> titles = searchResultPage.getAllTitlesWithoutWaiting();
 
         assertTrue(titles.isEmpty());
     }
@@ -86,7 +83,7 @@ public class SearchTests extends BaseTest {
     @Test
     public void isNotCaseSensitiveTitleUpperCase() {
         homePage.load();
-        String firstTitle = homePage.getFirstTitle();
+        String firstTitle = homePage.clickProductMenu().getFirstTitle();
         SearchResultPage searchResultPage = homePage.search(firstTitle.toUpperCase());
         List<String> foundProductTitles = searchResultPage.getAllTitles();
         System.out.println(foundProductTitles);
@@ -96,7 +93,7 @@ public class SearchTests extends BaseTest {
     @Test
     public void isNotCaseSensitiveTitleLowerCase() {
         homePage.load();
-        String firstTitle = homePage.getFirstTitle();
+        String firstTitle = homePage.clickProductMenu().getFirstTitle();
         SearchResultPage searchResultPage = homePage.search(firstTitle.toLowerCase());
         List<String> foundProductTitles = searchResultPage.getAllTitles();
         System.out.println(foundProductTitles);
