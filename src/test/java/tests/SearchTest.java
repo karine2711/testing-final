@@ -2,13 +2,15 @@ package tests;
 
 import base.BaseTest;
 import listeners.ScreenshotListener;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.SearchResultPage;
 
-import java.util.*;
+import java.util.List;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * These test cover the requirement:
@@ -16,56 +18,55 @@ import static org.testng.Assert.*;
  */
 @Listeners(ScreenshotListener.class)
 public class SearchTest extends BaseTest {
+    private SearchResultPage productMenu;
+
+    @BeforeMethod
+    public void setUp() {
+        productMenu = homePage.load().clickProductMenu();
+    }
+
     @Test
     public void searchByFirstTitleFull() {
-        homePage.load();
-        String firstTitle = homePage.clickProductMenu().getFirstTitle();
+        String firstTitle = productMenu.getFirstTitle();
         SearchResultPage searchResultPage = homePage.search(firstTitle);
         List<String> foundProductTitles = searchResultPage.getAllTitles();
-        System.out.println(foundProductTitles);
         assertTrue(foundProductTitles.contains(firstTitle));
     }
 
     @Test
     public void searchByFirstTitlePart() {
-        homePage.load();
-        String firstTitle = homePage.clickProductMenu().getFirstTitle();
+        String firstTitle = productMenu.getFirstTitle();
         var titlePart = firstTitle.substring(0, firstTitle.length() / 2);
         SearchResultPage searchResultPage = homePage.search(titlePart);
         List<String> foundProductTitles = searchResultPage.getAllTitles();
-        System.out.println(foundProductTitles);
         assertTrue(foundProductTitles.stream().anyMatch(title -> title.contains(firstTitle)));
     }
 
     @Test
     public void searchByFirstBrandFull() {
-        homePage.load();
-        String firstBrand = homePage.clickProductMenu().getFirstBrand();
-        SearchResultPage searchResultPage = homePage.search(firstBrand);
-        List<String> foundProductBrands = searchResultPage.getAllBrands();
-        System.out.println(foundProductBrands);
+        String firstBrand = productMenu.getFirstBrand();
+        List<String> foundProductBrands = homePage.search(firstBrand).getAllBrands();
         assertTrue(foundProductBrands.contains(firstBrand));
     }
 
     @Test
     public void searchByFirstBrandPart() {
-        homePage.load();
-        String firstBrand = homePage.clickProductMenu().getFirstBrand();
+        String firstBrand = productMenu.getFirstBrand();
         var brandPart = firstBrand.substring(0, firstBrand.length() / 2);
-        SearchResultPage searchResultPage = homePage.search(brandPart);
-        List<String> foundProductBrands = searchResultPage.getAllBrands();
-        System.out.println(foundProductBrands);
+        List<String> foundProductBrands = productMenu.search(brandPart).getAllBrands();
         assertTrue(foundProductBrands.stream().anyMatch(title -> title.contains(firstBrand)));
     }
 
     @Test
     public void emptySearchShouldReturnAllProducts() {
-        homePage.load();
-        SearchResultPage productMenu = homePage.clickProductMenu();
-        Integer lastPageNumberInProductMenu = productMenu.goToLastPage();
+        Integer lastPageNumberInProductMenu = productMenu
+                .getPagination()
+                .goToLastPage();
 
-        SearchResultPage searchResultPage = homePage.search("");
-        Integer lastPageNumberInSearch = searchResultPage.goToLastPage();
+        Integer lastPageNumberInSearch = productMenu
+                .search("")
+                .getPagination()
+                .goToLastPage();
 
         assertEquals(lastPageNumberInProductMenu, lastPageNumberInSearch);
     }
@@ -73,30 +74,22 @@ public class SearchTest extends BaseTest {
 
     @Test
     public void sqlInjectionDoesNotWork() {
-        homePage.load();
-        SearchResultPage searchResultPage = homePage.search("' OR '1'='1' --");
+        SearchResultPage searchResultPage = productMenu.search("' OR '1'='1' --");
         List<String> titles = searchResultPage.getAllTitlesWithoutWaiting();
-
         assertTrue(titles.isEmpty());
     }
 
     @Test
     public void isNotCaseSensitiveTitleUpperCase() {
-        homePage.load();
-        String firstTitle = homePage.clickProductMenu().getFirstTitle();
-        SearchResultPage searchResultPage = homePage.search(firstTitle.toUpperCase());
-        List<String> foundProductTitles = searchResultPage.getAllTitles();
-        System.out.println(foundProductTitles);
+        String firstTitle = productMenu.getFirstTitle();
+        List<String> foundProductTitles = homePage.search(firstTitle.toUpperCase()).getAllTitles();
         assertTrue(foundProductTitles.contains(firstTitle));
     }
 
     @Test
     public void isNotCaseSensitiveTitleLowerCase() {
-        homePage.load();
-        String firstTitle = homePage.clickProductMenu().getFirstTitle();
-        SearchResultPage searchResultPage = homePage.search(firstTitle.toLowerCase());
-        List<String> foundProductTitles = searchResultPage.getAllTitles();
-        System.out.println(foundProductTitles);
+        String firstTitle = productMenu.getFirstTitle();
+        List<String> foundProductTitles = productMenu.search(firstTitle.toLowerCase()).getAllTitles();
         assertTrue(foundProductTitles.contains(firstTitle));
     }
 }

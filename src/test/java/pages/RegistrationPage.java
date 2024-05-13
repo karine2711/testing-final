@@ -12,8 +12,8 @@ public class RegistrationPage extends BasePage {
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
 
-    public RegistrationPage(WebDriver driver,String language) {
-        super(driver,language);
+    public RegistrationPage(WebDriver driver, String language) {
+        super(driver, language);
         load();
     }
 
@@ -22,16 +22,8 @@ public class RegistrationPage extends BasePage {
         return this;
     }
 
-    private WebElement getSubmitButton() {
-        return getForm().findElement(Locators.SUBMIT_BUTTON);
-    }
-
-    private WebElement getForm() {
-        return driver.findElement(By.cssSelector(Locators.REGISTRATION_FORM.formatted(language)));
-    }
-
     public RegistrationPage submit() {
-        getSubmitButton().click();
+        getForm().findElement(Locators.SUBMIT_BUTTON).click();
         return this;
     }
 
@@ -86,5 +78,9 @@ public class RegistrationPage extends BasePage {
     public boolean validationPresent(String message) {
         WebElement element = driver.findElement(By.xpath("//div[contains(@class, 'container')][.//*[@id='name']]"));
         return element.getText().contains(message);
+    }
+
+    private WebElement getForm() {
+        return driver.findElement(By.cssSelector(Locators.REGISTRATION_FORM.formatted(language)));
     }
 }

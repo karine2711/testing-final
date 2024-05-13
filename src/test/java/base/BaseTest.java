@@ -8,7 +8,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import pages.HomePage;
@@ -31,7 +30,6 @@ public class BaseTest {
     protected static RegistrationPage registrationPage;
     protected static String language;
 
-    //todo: add language
     @Parameters({"language"})
     @BeforeClass
     public static void startDriver(@Optional("en") String lang) throws MalformedURLException {
@@ -52,11 +50,10 @@ public class BaseTest {
     protected void takeScreenshot(String testName) throws Exception {
 
         File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        File destination = new File(SCREENSHOTS_FOLDER, testName + "_" + new Date() + ".png");
+        File destination = new File(SCREENSHOTS_FOLDER, testName + "_" + new Date().toString().replaceAll("[^A-Za-z0-9]","_") + ".png");
         destination.createNewFile();
         try (var outputStream = new FileOutputStream(destination); var inputStream = new FileInputStream(srcFile)) {
             Files.copy(srcFile.toPath(), outputStream);
         }
     }
-
 }

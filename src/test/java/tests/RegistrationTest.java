@@ -2,7 +2,9 @@ package tests;
 
 import base.BaseTest;
 import listeners.ScreenshotListener;
-import org.testng.annotations.*;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
 
 import java.util.Date;
 
@@ -11,6 +13,7 @@ import static org.testng.AssertJUnit.assertTrue;
 
 @Listeners(ScreenshotListener.class)
 public class RegistrationTest extends BaseTest {
+    public static final String VALID_EMAIL = "value@email.com";
     //there is a bug on page, even when you are testing in Armenian
     // validations are shown in English
     private static final String REQUIRED_TEMPLATE = "The %s field is required.";
@@ -24,13 +27,19 @@ public class RegistrationTest extends BaseTest {
     private static final String BIRTHDAY_MONTH_REQUIRED_MESSAGE = REQUIRED_TEMPLATE.formatted("Month of Birthday");
     private static final String BIRTHDAY_DAY_REQUIRED_MESSAGE = REQUIRED_TEMPLATE.formatted("Day of Birthday");
     private static final String BIRTHDAY_YEAR_REQUIRED_MESSAGE = REQUIRED_TEMPLATE.formatted("Year of Birthday");
-
     private static final String BIRTHDAY_TEMPLATE = "The %s of Birthday field must only contain digits and must be greater than zero.";
     private static final String BIRTHDAY_MONTH_INVALID = BIRTHDAY_TEMPLATE.formatted("Month");
     private static final String BIRTHDAY_YEAR_INVALID = BIRTHDAY_TEMPLATE.formatted("Year");
     private static final String BIRTHDAY_DAY_INVALID = BIRTHDAY_TEMPLATE.formatted("Day");
     private static final String PASSWORD_TOO_SHORT = "The Password field must be at least 6 characters in length.";
-    public static final String VALID_EMAIL = "value@email.com";
+
+    private static void assertValidationNotPresent(String message) {
+        assertFalse(registrationPage.validationPresent(message));
+    }
+
+    private static void assertValidationPresent(String message) {
+        assertTrue(registrationPage.validationPresent(message));
+    }
 
     @Test
     public void testAllEmpty() {
@@ -97,6 +106,9 @@ public class RegistrationTest extends BaseTest {
         assertValidationPresent(CITY_REQUIRED_MESSAGE);
     }
 
+
+    // only pass the "required" validation for all fields
+
     @Test
     public void testSuccess() {
         registrationPage
@@ -108,9 +120,8 @@ public class RegistrationTest extends BaseTest {
                 .enterBirthYear("2001")
                 .enterBirthMonth("3");
 //                .submit();
-       // tested, passes
+        // tested, passes
     }
-
 
     @Test
     public void passwordLengthValidated() {
@@ -122,9 +133,6 @@ public class RegistrationTest extends BaseTest {
                 .submit();
         assertValidationPresent(PASSWORD_TOO_SHORT);
     }
-
-
-    // only pass the "required" validation for all fields
 
     @Test(dataProvider = "invalidBirthDayValues")
     public void birthDayValidated(String invalidBirthDayValue) {
@@ -166,15 +174,6 @@ public class RegistrationTest extends BaseTest {
         assertValidationNotPresent(BIRTHDAY_YEAR_INVALID);
         assertValidationPresent(BIRTHDAY_DAY_INVALID);
         assertValidationPresent(BIRTHDAY_MONTH_INVALID);
-    }
-
-
-    private static void assertValidationNotPresent(String message) {
-        assertFalse(registrationPage.validationPresent(message));
-    }
-
-    private static void assertValidationPresent(String message) {
-        assertTrue(registrationPage.validationPresent(message));
     }
 
     @DataProvider(name = "invalidBirthDayValues")

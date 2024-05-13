@@ -32,21 +32,17 @@ public class BasePage {
         driver.get("https://megatoys.am/" + language + endPoint);
     }
 
-    public String getUrl() {
-        return driver.getCurrentUrl();
-    }
-
     public SearchResultPage search(String input) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(SEARCH_INPUT));
         WebElement searchInput = driver.findElement(SEARCH_INPUT);
         searchInput.sendKeys(input);
         searchInput.findElement(SEARCH_BUTTON).click();
-        return new SearchResultPage(driver,language);
+        return new SearchResultPage(driver, language);
     }
 
     public SearchResultPage clickProductMenu() {
         driver.findElement(Locators.PRODUCT_MENU).findElement(Locators.DROPDOWN_TOGGLE).click();
-        return new SearchResultPage(driver,language);
+        return new SearchResultPage(driver, language);
     }
 
     public List<WebElement> getAgeFormOptions() {

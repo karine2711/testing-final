@@ -1,22 +1,28 @@
 package pages;
 
 import base.BasePage;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import util.Locators;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SearchResultPage extends BasePage {
-    public static final String DATA_CI_PAGINATION_PAGE = "data-ci-pagination-page";
-    Pattern ageInProductPattern = Pattern.compile("(\\d+(\\.\\d+)?)");
+    private final Pattern ageInProductPattern = Pattern.compile("(\\d+(\\.\\d+)?)");
+    private final Pagination pagination;
 
     public SearchResultPage(WebDriver driver, String language) {
         super(driver, language);
+        pagination = new Pagination(driver, language);
+    }
+
+    public Pagination getPagination() {
+        return pagination;
     }
 
     public List<String> getAllTitles() {
@@ -60,46 +66,6 @@ public class SearchResultPage extends BasePage {
                 .stream()
                 .map(e -> e.getAttribute("innerText"))
                 .toList();
-    }
-
-    //if all items are visible
-    public Integer goToLastPage() {
-        Optional<WebElement> lastPageElementOptional = getLastPageElement();
-        if (lastPageElementOptional.isPresent()) {
-            lastPageElementOptional.get().click();
-            return Integer.parseInt(getActivePage().get().getText());
-        }
-        return 1; // pagination doesn't exist, so there is only one page
-    }
-
-    public void goToFirstPage() {
-
-        try {
-            driver.findElement(Locators.PAGINATION_START).click();
-        } catch (NoSuchElementException e) {
-            System.out.println("Pagination not present. Can't go to first page");
-        }
-    }
-
-    private Optional<WebElement> getActivePage() {
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(Locators.PAGINATION_ACTIVE_LINK));
-
-            return Optional.of(driver.findElement(Locators.PAGINATION_ACTIVE_LINK));
-        } catch (TimeoutException e) {
-            return Optional.empty(); // no pagination present
-        }
-    }
-
-    public Optional<WebElement> getLastPageElement() {
-        try {
-            wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(Locators.PAGINATION_ITEM_LINK));
-            List<WebElement> paginationItems = driver.findElements(Locators.PAGINATION_ITEM_LINK);
-            return Optional.of(calculateMaxPaginationElement(paginationItems));
-        } catch (TimeoutException e) {
-            System.out.println("Pagination element not present");
-            return Optional.empty();
-        }
     }
 
     public SearchResultPage sortByPriceDesc() {
@@ -156,42 +122,5 @@ public class SearchResultPage extends BasePage {
                 .replace("Դր.", "")
                 .replace("AMD", "")
                 .trim());
-    }
-
-    private WebElement calculateMaxPaginationElement(List<WebElement> paginationItems) {
-        // Initialize variables to keep track of the largest page number and its corresponding <li> element
-        int maxPageNumber = Integer.MIN_VALUE;
-        WebElement maxPageElement = null;
-
-        // Iterate through the <li> elements to find the one with the largest page number
-        for (WebElement a : paginationItems) {
-            String pageNumberAttribute = a.getAttribute(DATA_CI_PAGINATION_PAGE);
-            if (pageNumberAttribute != null && !pageNumberAttribute.isEmpty()) {
-                int pageNumber = Integer.parseInt(pageNumberAttribute);
-                if (pageNumber > maxPageNumber) {
-                    maxPageNumber = pageNumber;
-                    maxPageElement = a;
-                }
-            }
-        }
-        return maxPageElement;
-    }
-
-
-    /**
-     * If the next page exists goes to it and returns true,
-     * otherwise, stays on the same page and returns false
-     */
-    public boolean getNextPage(int lastPage) {
-        Optional<WebElement> activePageOptional = getActivePage();
-        if (activePageOptional.isPresent()) {
-            int activePage = Integer.parseInt(activePageOptional.get().getText());
-            if (lastPage != activePage) {
-                wait.until(ExpectedConditions.elementToBeClickable(Locators.PAGINATION_NEXT));
-                driver.findElement(Locators.PAGINATION_NEXT).click();
-                return true;
-            }
-        }
-        return false;
     }
 }
