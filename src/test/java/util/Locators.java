@@ -27,7 +27,7 @@ public class Locators {
 
 
     //Registration
-    public static final By REGISTRATION_FORM = By.cssSelector("form[action=\"https://megatoys.am/en/users/edit\"]");
+    public static final String REGISTRATION_FORM = "form[action=\"https://megatoys.am/%s/users/edit\"]";
     public static final By SUBMIT_BUTTON = By.cssSelector("button[type=\"submit\"]");
     public static final By INPUT_TEXT = By.cssSelector("input[type=\"text\"]");
     public static final By EMAIL_INPUT = By.cssSelector("input[name=\"email\"]");

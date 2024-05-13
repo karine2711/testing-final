@@ -1,10 +1,7 @@
 package pages;
 
 import base.BasePage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import util.Locators;
 
@@ -16,10 +13,10 @@ import java.util.stream.Collectors;
 
 public class SearchResultPage extends BasePage {
     public static final String DATA_CI_PAGINATION_PAGE = "data-ci-pagination-page";
-    Pattern ageInProductPattern = Pattern.compile("(\\d+(\\.\\d+)?)\\+");
+    Pattern ageInProductPattern = Pattern.compile("(\\d+(\\.\\d+)?)");
 
-    public SearchResultPage(WebDriver driver) {
-        super(driver);
+    public SearchResultPage(WebDriver driver, String language) {
+        super(driver, language);
     }
 
     public List<String> getAllTitles() {
@@ -30,6 +27,7 @@ public class SearchResultPage extends BasePage {
                 .map(e -> e.getAttribute("innerText"))
                 .toList();
     }
+
     public List<String> getAllTitlesWithoutWaiting() {
         return driver
                 .findElements(Locators.PRODUCT_TITLES)
@@ -37,6 +35,7 @@ public class SearchResultPage extends BasePage {
                 .map(e -> e.getAttribute("innerText"))
                 .toList();
     }
+
     public String getFirstTitle() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.PRODUCT_TITLES));
         var titleAnchor = driver.findElement(Locators.PRODUCT_TITLES);
@@ -45,6 +44,7 @@ public class SearchResultPage extends BasePage {
 
         return title;
     }
+
     public String getFirstBrand() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.PRODUCT_BRAND));
         var titleAnchor = driver.findElement(Locators.PRODUCT_BRAND);
@@ -52,6 +52,7 @@ public class SearchResultPage extends BasePage {
         System.out.println("Brand found: " + title);
         return title;
     }
+
     public List<String> getAllBrands() {
         wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(Locators.PRODUCT_BRAND));
         return driver
@@ -66,18 +67,28 @@ public class SearchResultPage extends BasePage {
         Optional<WebElement> lastPageElementOptional = getLastPageElement();
         if (lastPageElementOptional.isPresent()) {
             lastPageElementOptional.get().click();
-            return Integer.parseInt(getActivePage().getText());
+            return Integer.parseInt(getActivePage().get().getText());
         }
         return 1; // pagination doesn't exist, so there is only one page
     }
 
     public void goToFirstPage() {
-        driver.findElement(Locators.PAGINATION_START).click();
+
+        try {
+            driver.findElement(Locators.PAGINATION_START).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Pagination not present. Can't go to first page");
+        }
     }
 
-    private WebElement getActivePage() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(Locators.PAGINATION_ACTIVE_LINK));
-        return driver.findElement(Locators.PAGINATION_ACTIVE_LINK);
+    private Optional<WebElement> getActivePage() {
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(Locators.PAGINATION_ACTIVE_LINK));
+
+            return Optional.of(driver.findElement(Locators.PAGINATION_ACTIVE_LINK));
+        } catch (TimeoutException e) {
+            return Optional.empty(); // no pagination present
+        }
     }
 
     public Optional<WebElement> getLastPageElement() {
@@ -114,7 +125,16 @@ public class SearchResultPage extends BasePage {
 
     }
 
-    private Double getLowerAgeInProduct(String ageText) {
+    public List<String> getAllAgeTexts() {
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(Locators.PRODUCT_AGE_XPATH));
+
+        return driver
+                .findElements(Locators.PRODUCT_AGE_XPATH)
+                .stream().map(WebElement::getText).toList();
+
+    }
+
+    public Double getLowerAgeInProduct(String ageText) {
         Matcher ageMatcher = ageInProductPattern.matcher(ageText);
         if (ageMatcher.find()) {
             String ageValue = ageMatcher.group(1);
@@ -163,20 +183,15 @@ public class SearchResultPage extends BasePage {
      * otherwise, stays on the same page and returns false
      */
     public boolean getNextPage(int lastPage) {
-        WebElement activePageki = getActivePage();
-        try {
-            int activePage = Integer.parseInt(activePageki.getText());
+        Optional<WebElement> activePageOptional = getActivePage();
+        if (activePageOptional.isPresent()) {
+            int activePage = Integer.parseInt(activePageOptional.get().getText());
             if (lastPage != activePage) {
                 wait.until(ExpectedConditions.elementToBeClickable(Locators.PAGINATION_NEXT));
                 driver.findElement(Locators.PAGINATION_NEXT).click();
                 return true;
             }
-            return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(activePageki);
-            System.out.println(activePageki.getText());
-            throw e;
         }
+        return false;
     }
 }

@@ -8,18 +8,11 @@ import util.Locators;
 
 
 public class HomePage extends BasePage {
+    String endpoint;
 
-    public HomePage(WebDriver driver) {
-        super(driver);
+    public HomePage(WebDriver driver, String language) {
+        super(driver,language);
     }
-
-    public SearchResultPage clickFirstSearchBubble() {
-        WebElement firstSearchBubble = driver.findElements(Locators.HOMEPAGE_SEARCH_BUBBLES).get(0);
-        firstSearchBubble.click();
-        return new SearchResultPage(driver);
-    }
-
-
 
     public HomePage load() {
         super.load("/");

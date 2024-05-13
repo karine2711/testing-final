@@ -29,17 +29,19 @@ public class BaseTest {
     protected static WebDriver driver;
     protected static HomePage homePage;
     protected static RegistrationPage registrationPage;
+    protected static String language;
 
     //todo: add language
-    @Parameters({"browser"})
+    @Parameters({"language"})
     @BeforeClass
-    public static void startDriver(@Optional("local") String browser) throws MalformedURLException {
+    public static void startDriver(@Optional("en") String lang) throws MalformedURLException {
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
         options.setExperimentalOption("useAutomationExtension", false);
         driver = new ChromeDriver(options);
-        homePage = new HomePage(driver);
-        registrationPage = new RegistrationPage(driver);
+        language = lang;
+        homePage = new HomePage(driver, language);
+        registrationPage = new RegistrationPage(driver, language);
     }
 
     @AfterClass

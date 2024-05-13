@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test verbose="2" name="English Tests">
+        <parameter name="language" value="en"/>
+        <classes>
+            <class name="tests.SearchTest">
+                <methods>
+                    <include name="searchByFirstTitleFull"/>
+                    <include name="searchByFirstTitlePart"/>
+                    <include name="searchByFirstBrandFull"/>
+                    <include name="searchByFirstBrandPart"/>
+                    <include name="emptySearchShouldReturnAllProducts"/>
+                    <include name="sqlInjectionDoesNotWork"/>
+                    <include name="isNotCaseSensitiveTitleUpperCase"/>
+                    <include name="isNotCaseSensitiveTitleLowerCase"/>
+                </methods>
+            </class>
+            <class name="tests.SortAndFilterTest">
+                <methods>
+                    <include name="testSortFromSearch"/>
+                    <include name="testSortFromProductsPage"/>
+                    <include name="testAllOptionsFilterByAge"/>
+                </methods>
+            </class>
+            <class name="tests.RegistrationTest">
+                <methods>
+                    <include name="testAllEmpty"/>
+                    <include name="onlyTextInputsFilledBirthdayValidated"/>
+                    <include name="emailValidatedFirstWithInvalidEmail"/>
+                    <include name="emailValidatedFirstWithValidEmail"/>
+                    <include name="passwordLengthValidated"/>
+                    <include name="birthDayValidated"/>
+                    <include name="birthMonthValidated"/>
+                    <include name="birthYEarValidated"/>
+
+                    <include name="testSuccess"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test verbose="2" name="Armenian Tests">
+        <parameter name="language" value="am"/>
+        <classes>
+            <class name="tests.SearchTest">
+                <methods>
+                    <include name="searchByFirstTitleFull"/>
+                    <include name="searchByFirstTitlePart"/>
+                    <include name="searchByFirstBrandFull"/>
+                    <include name="searchByFirstBrandPart"/>
+                    <include name="emptySearchShouldReturnAllProducts"/>
+                    <include name="sqlInjectionDoesNotWork"/>
+                    <include name="isNotCaseSensitiveTitleUpperCase"/>
+                    <include name="isNotCaseSensitiveTitleLowerCase"/>
+                </methods>
+            </class>
+            <class name="tests.SortAndFilterTest">
+                <methods>
+                    <include name="testSortFromSearch"/>
+                    <include name="testSortFromProductsPage"/>
+                    <include name="testAllOptionsFilterByAge"/>
+                </methods>
+            </class>
+            <class name="tests.RegistrationTest">
+                <methods>
+                    <include name="testAllEmpty"/>
+                    <include name="onlyTextInputsFilledBirthdayValidated"/>
+                    <include name="emailValidatedFirstWithInvalidEmail"/>
+                    <include name="emailValidatedFirstWithValidEmail"/>
+                    <include name="passwordLengthValidated"/>
+                    <include name="birthDayValidated"/>
+                    <include name="birthMonthValidated"/>
+                    <include name="birthYEarValidated"/>
+
+                    <include name="testSuccess"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>

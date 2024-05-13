@@ -32,12 +32,6 @@ public class RegistrationTest extends BaseTest {
     private static final String PASSWORD_TOO_SHORT = "The Password field must be at least 6 characters in length.";
     public static final String VALID_EMAIL = "value@email.com";
 
-
-    @BeforeMethod
-    public void setUp() {
-        registrationPage.load();
-    }
-
     @Test
     public void testAllEmpty() {
         registrationPage
@@ -69,6 +63,7 @@ public class RegistrationTest extends BaseTest {
     @Test(dataProvider = "invalidEmailValues")
     public void emailValidatedFirstWithInvalidEmail(String invalidEmail) {
         registrationPage
+                .load()
                 .enterEmail(invalidEmail)
                 .submit();
 
@@ -85,10 +80,12 @@ public class RegistrationTest extends BaseTest {
     @Test
     public void emailValidatedFirstWithValidEmail() {
         registrationPage
+                .load()
                 .enterEmail(VALID_EMAIL)
                 .submit();
 
         registrationPage
+                .load()
                 .enterEmail(VALID_EMAIL)
                 .submit();
 
@@ -102,6 +99,16 @@ public class RegistrationTest extends BaseTest {
 
     @Test
     public void testSuccess() {
+        registrationPage
+                .load()
+                .enterInAllTextFields("value")
+                .enterEmail(VALID_EMAIL)
+                .enterPassword("password")
+                .enterBirthDay("11")
+                .enterBirthYear("2001")
+                .enterBirthMonth("3");
+//                .submit();
+       // tested, passes
     }
 
 

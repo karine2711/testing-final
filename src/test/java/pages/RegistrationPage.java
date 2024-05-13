@@ -5,19 +5,20 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import util.Locators;
 
 public class RegistrationPage extends BasePage {
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
 
-    public RegistrationPage(WebDriver driver) {
-        super(driver);
+    public RegistrationPage(WebDriver driver,String language) {
+        super(driver,language);
         load();
     }
 
     public RegistrationPage load() {
-        super.load("/en/users/edit/");
+        super.load("/users/edit/");
         return this;
     }
 
@@ -26,7 +27,7 @@ public class RegistrationPage extends BasePage {
     }
 
     private WebElement getForm() {
-        return driver.findElement(Locators.REGISTRATION_FORM);
+        return driver.findElement(By.cssSelector(Locators.REGISTRATION_FORM.formatted(language)));
     }
 
     public RegistrationPage submit() {
@@ -49,8 +50,26 @@ public class RegistrationPage extends BasePage {
         return this;
     }
 
+    public RegistrationPage enterBirthDay(String birthDay) {
+        Select select = new Select(getForm().findElement(Locators.BIRTH_DAY));
+        select.selectByValue(birthDay);
+        return this;
+    }
+
+    public RegistrationPage enterBirthMonth(String birthMonth) {
+        Select select = new Select(getForm().findElement(Locators.BIRTH_MONTH));
+        select.selectByValue(birthMonth);
+        return this;
+    }
+
+    public RegistrationPage enterBirthYear(String birthYear) {
+        Select select = new Select(getForm().findElement(Locators.BIRTH_YEAR));
+        select.selectByValue(birthYear);
+        return this;
+    }
+
     public RegistrationPage injectInvalidBirthdayThroughJs(String birthDay) {
-        js.executeScript("document.querySelector('" + Locators.BIRTH_DAY_CSS + "').value='" + birthDay+"'");
+        js.executeScript("document.querySelector('" + Locators.BIRTH_DAY_CSS + "').value='" + birthDay + "'");
         return this;
     }
 

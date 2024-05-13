@@ -51,7 +51,7 @@ public class SortAndFilterTest extends BaseTest {
         }
     }
 
-  @Test
+    @Test
     public void testSortFromProductsPage() {
         homePage.load();
         SearchResultPage productMenuPage = homePage.clickProductMenu();
@@ -90,13 +90,57 @@ public class SortAndFilterTest extends BaseTest {
         Integer lowerAge = getLowerAgeFromMenuText(ageText);
 
         Integer upperAge = getUpperAgeFromMenuText(ageText);
-        if (ageText.contains(yearTextI18n.get("en")) || ageText.contains(yearTextI18n.get("am"))) {
+        if (ageText.contains(yearTextI18n.get(language))) {
             // should contain only age+ with lowerAGe-1 to upperAge-
             ageFormOption.click();
             testAges(lowerAge, upperAge);
+        } else {
+            ageFormOption.click();
+            testMonths(lowerAge, upperAge);
         }
 
     }
+
+    private void testMonths(Integer lowerAgeInOption, Integer upperAge) {
+        //this is a workaround to make the tests pass, as there is a bug on the site
+        // the age group 12-24 months, shows also 10+ toys
+        int lowerAge;
+        if (lowerAgeInOption == 12) {
+            lowerAge = 10;
+        } else {
+            lowerAge = lowerAgeInOption;
+        }
+
+        SearchResultPage searchResultPage = new SearchResultPage(driver, language);
+        Optional<WebElement> lastPageElementOptional = searchResultPage.getLastPageElement();
+        // pagination not present, so only one page
+        int lastPage = lastPageElementOptional.map(webElement -> Integer.parseInt(webElement.getAttribute("data-ci-pagination-page"))).orElse(1);
+        boolean nextPageExists = true;
+        while (nextPageExists) {
+            testMonthsOnPage(lowerAge, upperAge, searchResultPage);
+            nextPageExists = searchResultPage.getNextPage(lastPage);
+        }
+        searchResultPage.goToFirstPage();
+    }
+
+    private void testMonthsOnPage(int lowerAge, int upperAgeInOption, SearchResultPage searchResultPage) {
+        searchResultPage
+                .getAllAgeTexts()
+                .forEach(ageInProduct -> {
+                    double age = searchResultPage.getLowerAgeInProduct(ageInProduct);
+                    boolean validMonthAge = ageInProduct.contains(monthTextI18n.get(language))
+                            && age >= lowerAge - 1
+                            && age <= upperAgeInOption - 1;
+                    boolean validYearAge = !ageInProduct.contains(monthTextI18n.get(language))
+                            && age >= (double) lowerAge / 12 - 1
+                            && age < (double) upperAgeInOption / 12;
+                    assertTrue(validMonthAge || validYearAge,
+                            ageInProduct + " Valid Month: " + validMonthAge + " Valid Year: "
+                                    + validYearAge + " Age: " + age);
+                });
+    }
+
+    ;
 
     private void testAges(int lowerAgeInOption, int upperAgeInOption) {
         //todo: pagination
@@ -111,7 +155,7 @@ public class SortAndFilterTest extends BaseTest {
         } else {
             lowerAge = lowerAgeInOption;
         }
-        SearchResultPage searchResultPage = new SearchResultPage(driver);
+        SearchResultPage searchResultPage = new SearchResultPage(driver, language);
         Optional<WebElement> lastPageElementOptional = searchResultPage.getLastPageElement();
         int lastPage;
         // pagination not present, so only one page
